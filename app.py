@@ -18,7 +18,7 @@ def load_model():
             st.write("📥 Downloading model from Google Drive...")
             
             # ✅ Download the model from Google Drive
-            model_url = "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
+            model_url = "https://drive.google.com/uc?export=download&id=1tPhsj5zb-lnOJX0Vk9kM4VMHg9rJF903"
             response = requests.get(model_url)
             
             # ✅ Check if the download was successful
