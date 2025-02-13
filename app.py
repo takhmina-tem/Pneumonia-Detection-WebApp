@@ -6,8 +6,9 @@ import requests
 import os
 
 # ✅ Model Settings
-MODEL_PATH = "pneumonia_detection.h5"  # You can rename this if needed
-MODEL_URL = "https://drive.google.com/uc?export=download&id=1tPhsj5zb-lnOJX0Vk9kM4VMHg9rJF903"  # Your Google Drive link
+MODEL_PATH = "pneumonia_detection.keras"
+MODEL_URL = "https://drive.google.com/uc?export=download&id=1-4x5GUclvR_viuTh0x8QBegtgTvMjQh7"
+
 
 # ✅ Function to Load the Model
 @st.cache_resource
