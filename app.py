@@ -4,16 +4,28 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import cv2
 import requests
-from io import BytesIO
+import os
 
-# Load trained model from Google Drive (Replace with your Google Drive file ID)
-@st.cache(allow_output_mutation=True)
+# Set model path
+MODEL_PATH = "pneumonia_detection.h5"
+
+# ✅ Cache model loading to improve performance
+@st.cache_resource
 def load_model():
-    model_url = "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
-    response = requests.get(model_url)
-    model_bytes = BytesIO(response.content)
-    return tf.keras.models.load_model(model_bytes)
+    # Check if model already exists locally
+    if not os.path.exists(MODEL_PATH):
+        # ✅ Download the model from Google Drive
+        model_url = "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
+        response = requests.get(model_url)
+        
+        # Save the downloaded model
+        with open(MODEL_PATH, "wb") as f:
+            f.write(response.content)
 
+    # ✅ Load the model from local file
+    return tf.keras.models.load_model(MODEL_PATH)
+
+# Load the model
 model = load_model()
 
 # Function to preprocess the uploaded X-ray image
@@ -47,4 +59,3 @@ if uploaded_file is not None:
     else:
         st.success("✅ Normal X-ray")
         st.write(f"Confidence Score: {(1 - prediction) * 100:.2f}%")
-
