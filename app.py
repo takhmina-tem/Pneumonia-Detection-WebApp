@@ -5,14 +5,12 @@ import cv2
 import requests
 import os
 
-# ✅ Set Page Configuration for a Clean Dashboard Look
 st.set_page_config(
     page_title="Pneumonia Detection System",
     page_icon="📊",
     layout="wide",
 )
 
-# ✅ Custom Styling for a Dashboard-Like Look
 st.markdown("""
     <style>
         body { background-color: #f8f9fa; }
@@ -26,11 +24,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ✅ Force TensorFlow to Use CPU
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-# ✅ Model Path & Hugging Face Link
 MODEL_PATH = "pneumonia_detection.keras"
 MODEL_URL = "https://huggingface.co/takhminatem/pneumonia-detection/resolve/main/pneumonia_detection.keras"
 
@@ -59,14 +55,11 @@ def load_model():
         st.error(f"❌ Error loading model: {e}")
         return None
 
-# ✅ Load Model
 model = load_model()
 
-# 🎨 Layout
 st.markdown('<h1 class="main-title">Pneumonia Detection System</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-text">Upload a Chest X-ray image for automated analysis.</p>', unsafe_allow_html=True)
 
-# 📤 File Upload Section
 with st.container():
     col1, col2 = st.columns([1, 2])
 
@@ -80,21 +73,17 @@ with st.container():
         image = np.array(bytearray(uploaded_file.read()), dtype=np.uint8)
         image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-        # 🖼️ Display Uploaded Image
         with col2:
             st.image(image, caption="Uploaded Chest X-ray", use_container_width=True)
 
-        # 🔄 Preprocess Image for Model
         image_resized = cv2.resize(image, (150, 150))
         image_array = np.expand_dims(image_resized, axis=0) / 255.0
 
-        # 🤖 Make Prediction
         if model:
             prediction = model.predict(image_array)[0][0]
             result = "Pneumonia Detected" if prediction > 0.5 else "Normal X-ray"
             confidence = prediction * 100 if prediction > 0.5 else (1 - prediction) * 100
 
-            # 📊 Display Result
             result_style = "positive" if prediction > 0.5 else "negative"
             st.markdown(f'<div class="result-box {result_style}">{result}<br>Confidence: {confidence:.2f}%</div>', unsafe_allow_html=True)
         else:
