@@ -12,18 +12,35 @@ MODEL_PATH = "pneumonia_detection.h5"
 # ✅ Cache model loading to improve performance
 @st.cache_resource
 def load_model():
-    # Check if model already exists locally
-    if not os.path.exists(MODEL_PATH):
-        # ✅ Download the model from Google Drive
-        model_url = "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
-        response = requests.get(model_url)
-        
-        # Save the downloaded model
-        with open(MODEL_PATH, "wb") as f:
-            f.write(response.content)
+    try:
+        # Check if model already exists locally
+        if not os.path.exists(MODEL_PATH):
+            st.write("📥 Downloading model from Google Drive...")
+            
+            # ✅ Download the model from Google Drive
+            model_url = "https://drive.google.com/uc?export=download&id=YOUR_FILE_ID"
+            response = requests.get(model_url)
+            
+            # ✅ Check if the download was successful
+            if response.status_code == 200:
+                with open(MODEL_PATH, "wb") as f:
+                    f.write(response.content)
+                st.write("✅ Model downloaded successfully.")
+            else:
+                st.error("❌ Failed to download model. Check your Google Drive link.")
+                return None
 
-    # ✅ Load the model from local file
-    return tf.keras.models.load_model(MODEL_PATH)
+        # ✅ Verify if the model file exists after download
+        if os.path.exists(MODEL_PATH):
+            st.write("📂 Loading model from file...")
+            return tf.keras.models.load_model(MODEL_PATH)
+        else:
+            st.error("❌ Model file not found after download.")
+            return None
+
+    except Exception as e:
+        st.error(f"❌ Error loading model: {e}")
+        return None
 
 # Load the model
 model = load_model()
@@ -49,13 +66,10 @@ if uploaded_file is not None:
 
     # Preprocess and Predict
     img = preprocess_image(uploaded_file)
-    prediction = model.predict(img)[0][0]
 
-    # Display results
-    st.subheader("Prediction Result:")
-    if prediction > 0.5:
-        st.error("⚠️ Pneumonia Detected!")
-        st.write(f"Confidence Score: {prediction * 100:.2f}%")
-    else:
-        st.success("✅ Normal X-ray")
-        st.write(f"Confidence Score: {(1 - prediction) * 100:.2f}%")
+    # Ensure the model loaded correctly before making predictions
+    if model:
+        prediction = model.predict(img)[0][0]
+        st.subheader("Prediction Result:")
+        if prediction > 0.5:
+            st.error("⚠️ Pneumonia Detect
