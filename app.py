@@ -1,27 +1,24 @@
 import streamlit as st
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing import image
 import cv2
 import requests
 import os
 
-# Set model path
-MODEL_PATH = "pneumonia_detection.h5"
+# ✅ Model Settings
+MODEL_PATH = "pneumonia_detection.h5"  # You can rename this if needed
+MODEL_URL = "https://drive.google.com/uc?export=download&id=1tPhsj5zb-lnOJX0Vk9kM4VMHg9rJF903"  # Your Google Drive link
 
-# ✅ Cache model loading to improve performance
+# ✅ Function to Load the Model
 @st.cache_resource
 def load_model():
     try:
-        # Check if model already exists locally
+        # Check if model exists locally
         if not os.path.exists(MODEL_PATH):
             st.write("📥 Downloading model from Google Drive...")
-            
-            # ✅ Download the model from Google Drive
-            model_url = "https://drive.google.com/uc?export=download&id=1tPhsj5zb-lnOJX0Vk9kM4VMHg9rJF903"
-            response = requests.get(model_url)
-            
-            # ✅ Check if the download was successful
+            response = requests.get(MODEL_URL)
+
+            # ✅ Check if download was successful
             if response.status_code == 200:
                 with open(MODEL_PATH, "wb") as f:
                     f.write(response.content)
@@ -30,19 +27,15 @@ def load_model():
                 st.error("❌ Failed to download model. Check your Google Drive link.")
                 return None
 
-        # ✅ Verify if the model file exists after download
-        if os.path.exists(MODEL_PATH):
-            st.write("📂 Loading model from file...")
-            return tf.keras.models.load_model(MODEL_PATH)
-        else:
-            st.error("❌ Model file not found after download.")
-            return None
+        # ✅ Load the model
+        st.write("📂 Loading model...")
+        return tf.keras.models.load_model(MODEL_PATH)
 
     except Exception as e:
         st.error(f"❌ Error loading model: {e}")
         return None
 
-# Load the model
+# Load model
 model = load_model()
 
 # Function to preprocess the uploaded X-ray image
@@ -73,4 +66,9 @@ if uploaded_file is not None:
         st.subheader("Prediction Result:")
         if prediction > 0.5:
             st.error("⚠️ Pneumonia Detected!")
-
+            st.write(f"Confidence Score: {prediction * 100:.2f}%")
+        else:
+            st.success("✅ Normal X-ray")
+            st.write(f"Confidence Score: {(1 - prediction) * 100:.2f}%")
+    else:
+        st.error("❌ Model could not be loaded. Please check logs.")
