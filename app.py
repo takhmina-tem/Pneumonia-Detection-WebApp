@@ -7,7 +7,8 @@ import os
 
 # ✅ Model Path & Google Drive Link
 MODEL_PATH = "pneumonia_detection.keras"
-MODEL_URL = "https://drive.google.com/uc?export=download&id=1-4x5GUclvR_viuTh0x8QBegtgTvMjQh7"  # Replace with actual File ID
+MODEL_URL = "https://huggingface.co/takhminatem/pneumonia-detection/resolve/main/pneumonia_detection.keras"
+
 
 @st.cache_resource
 def load_model():
