@@ -4,10 +4,11 @@ import tensorflow as tf
 import cv2
 import requests
 import os
-import time  # Import time for delay
+import time
 
-# ✅ Force TensorFlow to Use CPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Completely disable GPU for TensorFlow
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Hide TensorFlow warnings about missing GPU
 
 # ✅ Model Path & Hugging Face Link
 MODEL_PATH = "pneumonia_detection.keras"
