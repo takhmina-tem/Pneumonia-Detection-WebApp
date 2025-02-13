@@ -3,12 +3,19 @@ import numpy as np
 import tensorflow as tf
 import cv2
 import requests
-import os
 import time
-
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Completely disable GPU for TensorFlow
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Hide TensorFlow warnings about missing GPU
+
+# ✅ Completely Disable GPU for TensorFlow
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+# ✅ Disable XLA (TensorFlow's GPU Compiler)
+os.environ["TF_XLA_FLAGS"] = "--tf_xla_auto_jit=2 --tf_xla_cpu_global_jit"
+os.environ["XLA_FLAGS"] = "--xla_force_host_platform_device_count=1"
+
+# ✅ Disable TensorFlow from checking CUDA
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "false"
 
 # ✅ Model Path & Hugging Face Link
 MODEL_PATH = "pneumonia_detection.keras"
